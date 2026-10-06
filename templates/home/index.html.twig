@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+{% block title %}Accueil · FIGURINEVITE{% endblock %}
+{% block body %}
+<section class="hero p-4 p-md-5 mb-5"><div class="row align-items-center g-4"><div class="col-lg-8"><p class="text-uppercase small fw-bold mb-2">La communauté des collectionneurs</p><h1 class="display-5 fw-bold">Vos figurines ont une histoire.</h1><p class="lead mb-0">Découvrez les collections, partagez vos pièces et échangez avec d’autres passionnés.</p></div><div class="col-lg-4 text-lg-end"><a class="btn btn-light btn-lg" href="{{ path('app_figurine_index') }}">Explorer les figurines</a></div></div></section>
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3"><div><p class="text-uppercase text-secondary small fw-bold mb-1">Sélection récente</p><h2 class="h3 mb-0">Dernières figurines</h2></div><a href="{{ path('app_figurine_index') }}" class="link-underline link-underline-opacity-0">Toute la collection →</a></div>
+{% if figurines is empty %}<div class="card p-5 text-center"><h3 class="h5">La collection commence ici</h3><p class="text-secondary">Inscrivez-vous pour partager la première figurine.</p><a class="btn btn-primary mx-auto" href="{{ path('app_register') }}">Créer un compte</a></div>{% else %}<div class="row g-4">{% for figurine in figurines %}{% include 'figurine/_card.html.twig' with {figurine: figurine} %}{% endfor %}</div>{% endif %}
+{% endblock %}

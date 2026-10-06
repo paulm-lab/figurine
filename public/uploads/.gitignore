@@ -1,0 +1,8 @@
+*
+!.gitignore
+!figurines/
+!users/
+figurines/*
+!figurines/figurine-placeholder.svg
+users/*
+!users/user-placeholder.svg
