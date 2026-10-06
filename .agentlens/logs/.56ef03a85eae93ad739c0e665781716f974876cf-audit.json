@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 7
+    },
+    "auditLog": "c:\\wamp64\\www\\Cfitech\\figurine\\.agentlens\\logs\\.56ef03a85eae93ad739c0e665781716f974876cf-audit.json",
+    "files": [
+        {
+            "date": 1791283463681,
+            "name": "c:\\wamp64\\www\\Cfitech\\figurine\\.agentlens\\logs\\vscode-2026-10-06.log",
+            "hash": "9d9a9c7aff41aae63c774c6cb261a50aa54ec24e48c7c75c1819474513316e60"
+        }
+    ],
+    "hashType": "sha256"
+}
