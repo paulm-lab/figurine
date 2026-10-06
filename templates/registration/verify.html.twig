@@ -1,8 +1,28 @@
-﻿{% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}
+
 {% block title %}Vérification de l’adresse · FIGURINEVITE{% endblock %}
+
 {% block body %}
-<div class="row justify-content-center"><div class="col-md-8 col-lg-6"><div class="card p-4 p-md-5 text-center"><div class="display-4 text-primary mb-3">✉</div><h1 class="h2">Vérifier votre adresse e-mail</h1>
-{% if verificationUrl is defined %}<p class="text-secondary">Aucun serveur d’envoi d’e-mail n’est configuré. Utilisez ce lien personnel pour confirmer votre adresse :</p><a class="btn btn-primary" href="{{ verificationUrl }}">Vérifier mon adresse e-mail</a>
-{% else %}<p class="text-secondary">Le lien de vérification est personnel. Ouvrez le lien fourni lors de la création du compte pour confirmer votre adresse.</p><a class="btn btn-primary" href="{{ path('app_login') }}">Aller à la connexion</a>{% endif %}
-</div></div></div>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-4 p-md-5 text-center">
+                <div class="display-4 text-primary mb-3" aria-hidden="true">✉</div>
+                <h1 class="h2">Vérifier votre adresse e-mail</h1>
+
+                {% if emailSent is defined and emailSent %}
+                    <p class="text-secondary">Un message de vérification a été envoyé. Ouvrez-le dans votre Email Sandbox Mailtrap et cliquez sur le lien qu’il contient.</p>
+                {% elseif emailSent is defined and not emailSent %}
+                    <p class="text-secondary">Le compte existe, mais l’e-mail n’a pas pu être envoyé. Vérifiez les paramètres SMTP dans <code>.env.local</code>.</p>
+                    {% if verificationUrl is defined %}
+                        <p class="text-secondary">Vous pouvez aussi vérifier l’adresse à l’aide de ce lien :</p>
+                        <a class="btn btn-outline-primary mb-3" href="{{ verificationUrl }}">Vérifier mon adresse e-mail</a>
+                    {% endif %}
+                {% else %}
+                    <p class="text-secondary">Le lien de vérification est personnel. Ouvrez le lien reçu par e-mail pour confirmer votre adresse.</p>
+                {% endif %}
+
+                <a class="btn btn-primary" href="{{ path('app_login') }}">Aller à la connexion</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

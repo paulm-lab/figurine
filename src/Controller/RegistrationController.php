@@ -12,11 +12,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
-    public function register(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $entityManager): Response
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $hasher,
+        EntityManagerInterface $entityManager,
+        EmailVerifier $emailVerifier,
+    ): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -27,10 +33,28 @@ class RegistrationController extends AbstractController
             $user->setVerificationToken($token);
             $entityManager->persist($user);
             $entityManager->flush();
-            $this->addFlash('info', sprintf('Bienvenue %s ! Votre compte a été créé.', $user->getFirstname()));
-            return $this->render('registration/verify.html.twig', [
-                'verificationUrl' => $this->generateUrl('app_verify_email', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL),
-            ]);
+            $verificationUrl = $this->generateUrl(
+                'app_verify_email',
+                ['token' => $token],
+                UrlGeneratorInterface::ABSOLUTE_URL,
+            );
+
+            try {
+                $emailVerifier->sendVerificationEmail($user, $verificationUrl);
+                $this->addFlash('info', sprintf(
+                    'Bienvenue %s ! Votre compte a été créé. Consultez votre boîte Mailtrap pour vérifier votre adresse.',
+                    $user->getFirstname(),
+                ));
+
+                return $this->render('registration/verify.html.twig', ['emailSent' => true]);
+            } catch (TransportExceptionInterface) {
+                $this->addFlash('danger', 'Le compte a été créé, mais l’envoi de l’e-mail a échoué. Vérifiez les paramètres SMTP Mailtrap dans .env.local.');
+
+                return $this->render('registration/verify.html.twig', [
+                    'emailSent' => false,
+                    'verificationUrl' => $verificationUrl,
+                ]);
+            }
         }
         return $this->render('registration/register.html.twig', ['form' => $form]);
     }
@@ -44,7 +68,7 @@ class RegistrationController extends AbstractController
             if ($user instanceof User) {
                 $user->setIsVerified(true)->setVerificationToken(null);
                 $entityManager->flush();
-                $this->addFlash('success', 'Votre adresse e-mail est vérifiée.');
+                $this->addFlash('success', 'Votre adresse e-mail est vérifiée. Vous pouvez maintenant vous connecter.');
                 return $this->redirectToRoute('app_login');
             }
             $this->addFlash('danger', 'Ce lien de vérification est invalide ou a déjà été utilisé.');

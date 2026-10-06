@@ -63,6 +63,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(options: ['default' => false])]
     private bool $isVerified = false;
 
+    #[ORM\Column(length: 64, nullable: true, unique: true)]
+    private ?string $passwordResetToken = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $passwordResetExpiresAt = null;
+
     /** @var Collection<int, Figurine> */
     #[ORM\OneToMany(targetEntity: Figurine::class, mappedBy: 'author', orphanRemoval: true)]
     private Collection $figurines;
@@ -97,6 +103,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVerificationToken(?string $token): static { $this->verificationToken = $token; return $this; }
     public function isVerified(): bool { return $this->isVerified; }
     public function setIsVerified(bool $verified): static { $this->isVerified = $verified; return $this; }
+    public function getPasswordResetToken(): ?string { return $this->passwordResetToken; }
+    public function setPasswordResetToken(?string $token): static { $this->passwordResetToken = $token; return $this; }
+    public function getPasswordResetExpiresAt(): ?\DateTimeImmutable { return $this->passwordResetExpiresAt; }
+    public function setPasswordResetExpiresAt(?\DateTimeImmutable $expiresAt): static { $this->passwordResetExpiresAt = $expiresAt; return $this; }
     /** @return Collection<int, Figurine> */
     public function getFigurines(): Collection { return $this->figurines; }
     public function addFigurine(Figurine $figurine): static
